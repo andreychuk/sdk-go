@@ -68,11 +68,13 @@ func (c Client) Send(apiUrl string, req Request) (Response, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
 		return nil, err
 	}
-	errMsg := res["err_description"].(string)
-	if resp.StatusCode != 200 {
-		return res, errors.New(errMsg)
-	} else if res["status"] == "error" {
-		return res, errors.New(errMsg)
+	if _, ok := res[err_description]; ok {
+		errMsg := res["err_description"].(string)
+		if resp.StatusCode != 200 {
+			return res, errors.New(errMsg)
+		} else if res["status"] == "error" {
+			return res, errors.New(errMsg)
+		}
 	}
 
 	return res, nil
